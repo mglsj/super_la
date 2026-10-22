@@ -9,24 +9,53 @@ export const HEX = {
 	teal: 0x5cd0b3,
 	purple: 0xb392d6,
 	axis: 0x6b7a90,
+	axisLine: 0x9aa7bb,
+	orange: 0xff9f5a,
 	grid: 0x3b6e8f
 } as const;
 
-/** Faint grid on the xy plane plus three axes. */
+/** A small text label that always faces the camera. */
+export function addLabel(THREE: Three, scene: Object3D, text: string, at: number[], color = '#e6edf7', size = 0.42) {
+	const canvas = document.createElement('canvas');
+	canvas.width = canvas.height = 64;
+	const g = canvas.getContext('2d')!;
+	g.font = 'italic 600 44px Georgia, serif';
+	g.textAlign = 'center';
+	g.textBaseline = 'middle';
+	g.lineWidth = 6;
+	g.strokeStyle = '#0d1424';
+	g.strokeText(text, 32, 34);
+	g.fillStyle = color;
+	g.fillText(text, 32, 34);
+	const sprite = new THREE.Sprite(
+		new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(canvas), transparent: true, depthTest: false })
+	);
+	sprite.position.set(at[0], at[1], at[2]);
+	sprite.scale.set(size, size, 1);
+	sprite.renderOrder = 20;
+	scene.add(sprite);
+	return sprite;
+}
+
+/**
+ * Faint grid on the xy plane plus three labelled axes. The axes are a neutral grey on purpose,
+ * so that coloured vectors in a figure are never confused with them.
+ */
 export function addAxes(THREE: Three, scene: Object3D, size = 4) {
 	const grid = new THREE.GridHelper(size * 2, size * 2, HEX.axis, HEX.grid);
 	grid.rotation.x = Math.PI / 2;
-	(grid.material as Material).opacity = 0.35;
+	(grid.material as Material).opacity = 0.3;
 	(grid.material as Material).transparent = true;
 	scene.add(grid);
-	for (const [dir, color] of [
-		[[1, 0, 0], HEX.iHat],
-		[[0, 1, 0], HEX.jHat],
-		[[0, 0, 1], HEX.kHat]
+	for (const [dir, name] of [
+		[[1, 0, 0], 'x'],
+		[[0, 1, 0], 'y'],
+		[[0, 0, 1], 'z']
 	] as const) {
 		scene.add(
-			new THREE.ArrowHelper(new THREE.Vector3(...dir), new THREE.Vector3(0, 0, 0), size, color, 0.25, 0.12)
+			new THREE.ArrowHelper(new THREE.Vector3(...dir), new THREE.Vector3(0, 0, 0), size, HEX.axisLine, 0.2, 0.1)
 		);
+		addLabel(THREE, scene, name, dir.map((c) => c * (size + 0.35)), '#aab4c6', 0.4);
 	}
 }
 

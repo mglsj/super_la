@@ -5,7 +5,7 @@
 	import Dot from '#lib/viz/Dot.svelte';
 	import Line from '#lib/viz/Line.svelte';
 	import Scene3D, { type SceneApi } from '#lib/viz/Scene3D.svelte';
-	import { addAxes, makeArrow, makePlane, makeSphere, orientPlane, setArrow, HEX } from '#lib/viz/three-helpers.js';
+	import { addAxes, addLabel, makeArrow, makePlane, makeSphere, orientPlane, setArrow, HEX } from '#lib/viz/three-helpers.js';
 	import { cross } from '#lib/math/vec.js';
 	import { C } from '#lib/viz/theme.js';
 	import Tex from '#lib/components/lesson/Tex.svelte';
@@ -29,11 +29,16 @@
 	function build({ THREE, scene }: SceneApi) {
 		addAxes(THREE, scene, 3);
 		const plane = makePlane(THREE, cross(p, q), 7, HEX.yellow);
-		const ap = makeArrow(THREE, [0, 0, 0], p, HEX.iHat);
-		const aq = makeArrow(THREE, [0, 0, 0], q, HEX.jHat);
+		// the two fixed vectors p and q: dim orange and dim purple, named at their tips
+		const ap = makeArrow(THREE, [0, 0, 0], p, 0x9a5a2a);
+		const aq = makeArrow(THREE, [0, 0, 0], q, 0x6d5a99);
+		addLabel(THREE, scene, 'p', p.map((x) => x * 1.08), '#ff9f5a');
+		addLabel(THREE, scene, 'q', q.map((x) => x * 1.08), '#b392d6');
+		// the walk to the point: bright s·p, then bright t·q starting where s·p ends
+		const leg1 = makeArrow(THREE, [0, 0, 0], p, HEX.orange);
+		const leg2 = makeArrow(THREE, p, q, HEX.purple);
 		const ball = makeSphere(THREE, [0, 0, 0], HEX.teal, 0.13);
-		const leg1 = makeArrow(THREE, [0, 0, 0], p, HEX.iHat);
-		scene.add(plane, ap, aq, ball, leg1);
+		scene.add(plane, ap, aq, leg1, leg2, ball);
 		return {
 			update() {
 				orientPlane(THREE, plane, cross(p, q));
@@ -41,6 +46,7 @@
 				const pt = sp.map((x, i) => x + t * q[i]);
 				ball.position.set(pt[0], pt[1], pt[2]);
 				setArrow(THREE, leg1, [0, 0, 0], sp);
+				setArrow(THREE, leg2, sp, pt);
 			}
 		};
 	}
@@ -101,7 +107,7 @@
 	<li>In 3D, two independent vectors span a plane inside 3D space, and a third independent one fills all of it.</li>
 </ul>
 
-<Figure caption="Orbit the view. Two vectors in 3D only reach a flat sheet. Move s and t to place the teal point anywhere on it.">
+<Figure caption="Grey lines are the x, y, z axes. Dim orange p and dim purple q are the two fixed vectors; the bright arrows show the walk s·p then t·q. Orbit the view: two vectors in 3D only reach a flat sheet.">
 	<Scene3D {build} label="Plane spanned by two vectors in 3D" height={340} />
 	{#snippet controls()}
 		<Slider label="s" bind:value={s} min={-2} max={2} step={0.1} />

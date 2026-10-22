@@ -86,6 +86,7 @@
 					controls.dispose();
 					scene.traverse((o) => {
 						const m = o as ThreeNS.Mesh;
+						(o as ThreeNS.Sprite).material?.map?.dispose?.();
 						m.geometry?.dispose?.();
 						const mat = m.material as ThreeNS.Material | ThreeNS.Material[] | undefined;
 						if (Array.isArray(mat)) mat.forEach((x) => x.dispose());
