@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { resolve } from '$app/paths';
 	import { chapters, lessonId } from '#lib/content/chapters.js';
-	import { isReady } from '#lib/content/registry.js';
+	import { exercisesFor, isReady } from '#lib/content/registry.js';
 	import { progress } from '#lib/game/progress.svelte.js';
 	import { MASTERY_NAMES } from '#lib/game/engine.js';
 	import MasteryIcon from '#lib/components/game/MasteryIcon.svelte';
@@ -113,6 +113,24 @@
 							<span class="min-w-0 flex-1">
 								<span class="block font-medium text-slate-100">Unit test</span>
 								<span class="block text-xs text-slate-400">Mixed questions from every skill. Skills can level up or drop.</span>
+							</span>
+							<span class="font-pixel text-[10px] text-[#fbd000]">▶</span>
+						</a>
+					</li>
+				{/if}
+
+				{#if exercisesFor(ch.id).length}
+					{@const exIds = exercisesFor(ch.id).map((q) => q.id)}
+					<li>
+						<a
+							href={resolve('/learn/[chapter]/exercises', { chapter: ch.id })}
+							class="flex items-center gap-3 rounded-md border-[3px] border-[#049cd8] bg-[#049cd8]/10 p-3 hover:bg-[#049cd8]/20"
+						>
+							<span class="font-pixel w-9 shrink-0 text-center text-[10px] text-[#049cd8]">EX</span>
+							<PixelIcon name="qblock" size={32} />
+							<span class="min-w-0 flex-1">
+								<span class="block font-medium text-slate-100">Exercises from the notes</span>
+								<span class="block text-xs text-slate-400">All {exIds.length} end-of-chapter exercises, with hints and worked solutions. {progress.exercisesDone(exIds)} solved.</span>
 							</span>
 							<span class="font-pixel text-[10px] text-[#fbd000]">▶</span>
 						</a>

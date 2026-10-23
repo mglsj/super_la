@@ -28,17 +28,48 @@ interface QBase {
 	id: string;
 	/** text with optional inline $math$ */
 	prompt: string;
-	/** shown after answering */
+	/** worked solution, shown once the question is solved or revealed */
 	explain: string;
-	/** nudge revealed on request; a hint means the answer no longer counts as clean */
-	hint?: string;
+	/**
+	 * Progressive hints, gentlest first. Each one should move the student a concrete step
+	 * (what to compute, which fact to use) without stating the final answer.
+	 * Using any hint means the answer no longer counts as first try.
+	 */
+	hints?: string[];
+	/** where it comes from, e.g. "Notes, Exercise 2.19" */
+	source?: string;
+}
+
+/** Feedback for a specific wrong answer a student is likely to give. */
+export interface Slip {
+	value: number | number[];
+	note: string;
+}
+
+/** Extra teaching material merged onto a question by id (see content/enrich). */
+export interface Enrich {
+	hints?: string[];
+	/** mcq only: one explanation per choice, in the same order as `choices` */
+	notes?: string[];
+	slips?: Slip[];
 }
 
 export type Question = QBase &
 	(
-		| { type: 'mcq'; choices: string[]; answer: number }
-		| { type: 'numeric'; answer: number; tol?: number }
-		| { type: 'vector'; answer: number[]; tol?: number }
+		| {
+				type: 'mcq';
+				choices: string[];
+				answer: number;
+				/** why each choice is right or wrong, same order as `choices` */
+				notes?: string[];
+		  }
+		| { type: 'numeric'; answer: number; tol?: number; slips?: Slip[] }
+		| { type: 'vector'; answer: number[]; tol?: number; slips?: Slip[] }
+		/**
+		 * A proof, explanation or construction that cannot be auto-graded: the student works it out,
+		 * reveals the model solution, and marks themselves.
+		 */
+		| { type: 'open'; solution: string }
 		/** drag the arrow tip onto the target */
 		| {
 				type: 'goal-vector';

@@ -37,6 +37,8 @@ export interface ProgressData {
 	answers: Record<string, { right: number; wrong: number }>;
 	review: Record<string, ReviewState>;
 	badges: Record<string, string>;
+	/** ids of the notes' exercises you have solved */
+	exercises: Record<string, true>;
 }
 
 export interface LevelChange {
@@ -55,7 +57,8 @@ const fresh = (): ProgressData => ({
 	lessons: {},
 	answers: {},
 	review: {},
-	badges: {}
+	badges: {},
+	exercises: {}
 });
 
 function load(): ProgressData {
@@ -162,9 +165,12 @@ class ProgressStore {
 		let change: LevelChange | null = null;
 		if (opts.mode === 'review') {
 			const id = skillOf(questionId);
-			const to = reviewLevel(this.mastery(id), correct);
-			change = this.#setLevel(id, to);
-			if (to > change.from && to >= 2) coins += XP.levelUp;
+			// exercises from the notes are not tied to a single skill, so only lesson questions move mastery
+			if (allLessons.some((l) => l.id === id)) {
+				const to = reviewLevel(this.mastery(id), correct);
+				change = this.#setLevel(id, to);
+				if (to > change.from && to >= 2) coins += XP.levelUp;
+			}
 		}
 		this.#award(coins);
 		return { coins, change };
@@ -197,6 +203,15 @@ class ProgressStore {
 		}
 		this.#award(bonus);
 		return changes;
+	}
+
+	/** Record that a notes exercise was solved (self-graded for proofs). */
+	markExercise(id: string) {
+		this.data.exercises[id] = true;
+		this.#save();
+	}
+	exercisesDone(ids: string[]): number {
+		return ids.filter((id) => this.data.exercises[id]).length;
 	}
 
 	dismissFresh() {

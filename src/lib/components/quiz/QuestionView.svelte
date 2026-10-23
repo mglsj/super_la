@@ -23,6 +23,7 @@
 	import Dot from '#lib/viz/Dot.svelte';
 	import TransformGrid from '#lib/viz/TransformGrid.svelte';
 	import { C } from '#lib/viz/theme.js';
+	import { diagnose } from '#lib/game/diagnose.js';
 	import type { Question } from '#lib/content/types.js';
 	import { Button } from '#lib/components/ui/button/index.js';
 
@@ -30,10 +31,12 @@
 		q: Question;
 		/** 'idle' while answering; parent flips to right/wrong after onsubmit */
 		status: 'idle' | 'right' | 'wrong';
+		/** true once the answer is solved or revealed: show every explanation */
+		reveal?: boolean;
 		onsubmit: (correct: boolean) => void;
 	}
 
-	let { q, status, onsubmit }: Props = $props();
+	let { q, status, reveal = false, onsubmit }: Props = $props();
 
 	let locked = $derived(status === 'right');
 	let order = $derived(q.type === 'mcq' ? orderFor(q.id, q.choices.length) : []);
@@ -45,6 +48,8 @@
 	let tip = $state<number[]>(untrackStart());
 	let iHat = $state<number[]>([1, 0]);
 	let jHat = $state<number[]>([0, 1]);
+	let work = $state('');
+	let shown = $state(false);
 
 	function untrackStart(): number[] {
 		return q.type === 'goal-vector' ? [...(q.start ?? [1, 1])] : [0, 0];
@@ -84,6 +89,17 @@
 		[iHat[0], jHat[0]],
 		[iHat[1], jHat[1]]
 	]);
+
+	/** why the answer just given is wrong, when we can tell */
+	let diag = $derived(
+		status === 'wrong' && !reveal && q.type !== 'mcq' // mcq already shows the note under the chosen choice
+			? diagnose(q, {
+					choice,
+					value: q.type === 'numeric' ? num(text) : null,
+					parts: q.type === 'vector' ? comps.slice(0, q.answer.length).map(num) : null
+				})
+			: null
+	);
 </script>
 
 <div class="space-y-4">
@@ -93,18 +109,31 @@
 		<div class="grid gap-2" role="radiogroup" aria-label="Answer choices">
 			{#each order as i (i)}
 				{@const c = q.choices[i]}
-				<button
-					type="button"
-					role="radio"
-					aria-checked={choice === i}
-					disabled={locked}
-					onclick={() => (choice = i)}
-					class="rounded-xl border px-4 py-3 text-left transition focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none
-						{choice === i ? 'border-sky-400 bg-sky-400/10 text-white' : 'border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500'}
-						{status === 'right' && i === q.answer ? 'border-emerald-400 bg-emerald-400/10' : ''}"
-				>
-					<Rich text={c} />
-				</button>
+				{@const note = q.notes?.[i]}
+				<div>
+					<button
+						type="button"
+						role="radio"
+						aria-checked={choice === i}
+						disabled={locked}
+						onclick={() => (choice = i)}
+						class="w-full rounded-xl border px-4 py-3 text-left transition focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none
+							{reveal && i === q.answer
+							? 'border-emerald-400 bg-emerald-400/10 text-white'
+							: status === 'wrong' && choice === i
+								? 'border-rose-400 bg-rose-400/10 text-white'
+								: choice === i
+									? 'border-sky-400 bg-sky-400/10 text-white'
+									: 'border-slate-700 bg-slate-900/60 text-slate-300 hover:border-slate-500'}"
+					>
+						<span class="mr-1 font-semibold">{reveal && i === q.answer ? '✓' : reveal || (status === 'wrong' && choice === i) ? '✗' : ''}</span><Rich text={c} />
+					</button>
+					{#if note && (reveal || (status === 'wrong' && choice === i))}
+						<p class="mt-1 rounded-md px-3 py-2 text-sm leading-relaxed {i === q.answer ? 'bg-emerald-400/10 text-emerald-100' : 'bg-rose-400/10 text-rose-100'}">
+							<span class="font-semibold">{i === q.answer ? 'Why this is right: ' : 'Why not: '}</span><Rich text={note} />
+						</p>
+					{/if}
+				</div>
 			{/each}
 		</div>
 	{:else if q.type === 'numeric'}
@@ -155,9 +184,42 @@
 				A = [{iHat[0].toFixed(1)} {jHat[0].toFixed(1)}; {iHat[1].toFixed(1)} {jHat[1].toFixed(1)}]
 			</p>
 		</div>
+	{:else if q.type === 'open'}
+		<div class="space-y-3">
+			<label class="block text-sm text-slate-400" for="work-{q.id}">Work it out here first (this is just for you, it is not saved or graded):</label>
+			<textarea
+				id="work-{q.id}"
+				bind:value={work}
+				rows="4"
+				disabled={status !== 'idle'}
+				class="w-full rounded-lg border border-slate-600 bg-slate-900 px-3 py-2 font-mono text-sm text-slate-100 outline-none focus:ring-2 focus:ring-sky-400"
+			></textarea>
+			{#if !shown && status === 'idle'}
+				<Button variant="secondary" onclick={() => (shown = true)}>Show the model solution</Button>
+			{/if}
+			{#if shown || status !== 'idle'}
+				<div class="rounded-md border-[3px] border-violet-400/50 bg-violet-400/10 p-3 text-sm leading-relaxed whitespace-pre-line text-slate-100">
+					<span class="font-pixel mb-2 block text-[10px] text-violet-300">MODEL SOLUTION</span>
+					<Rich text={q.solution} />
+				</div>
+			{/if}
+			{#if shown && status === 'idle'}
+				<p class="text-sm text-slate-300">Compare it with your work. Be honest: did you reach the same result for the same reasons?</p>
+				<div class="flex flex-wrap gap-2">
+					<Button onclick={() => onsubmit(true)}>I solved it</Button>
+					<Button variant="secondary" onclick={() => onsubmit(false)}>Not yet, I'll come back</Button>
+				</div>
+			{/if}
+		</div>
 	{/if}
 
-	{#if status === 'idle'}
+	{#if diag}
+		<p class="rounded-md bg-amber-400/10 px-3 py-2 text-sm leading-relaxed text-amber-100">
+			<span class="font-semibold">Look closer: </span><Rich text={diag} />
+		</p>
+	{/if}
+
+	{#if status === 'idle' && q.type !== 'open'}
 		<Button onclick={check} disabled={!ready}>Check</Button>
 	{/if}
 </div>

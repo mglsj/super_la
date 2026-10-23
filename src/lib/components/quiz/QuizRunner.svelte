@@ -17,8 +17,9 @@
 		 * practice: one lesson's skill, hints and instant feedback.
 		 * test: unit test or course challenge, no feedback until the end.
 		 * review: spaced repetition with instant feedback.
+		 * exercises: the end-of-chapter exercises from the notes; hints and feedback, no skill levels.
 		 */
-		mode?: 'practice' | 'test' | 'review';
+		mode?: 'practice' | 'test' | 'review' | 'exercises';
 		/** practice mode: the skill being practised */
 		lessonId?: string;
 		/** practice mode: where "next" should go */
@@ -37,7 +38,7 @@
 	let attempts = $state(0);
 	let status = $state<'idle' | 'right' | 'wrong'>('idle');
 	let revealed = $state(false);
-	let hintOpen = $state(false);
+	let hintLevel = $state(0);
 	let hintUsed = $state(false);
 	let finished = $state(false);
 	let startXp = $state(0);
@@ -65,7 +66,8 @@
 		}
 		const clean = attempts === 0 && !hintUsed;
 		attempts++;
-		const { change } = progress.answer(q.id, correct, { clean, mode });
+		const { change } = progress.answer(q.id, correct, { clean, mode: mode === 'exercises' ? 'practice' : mode });
+		if (correct && mode === 'exercises') progress.markExercise(q.id);
 		if (change) changes.push(change);
 		if (correct) {
 			if (clean) cleanCount++;
@@ -87,7 +89,7 @@
 			attempts = 0;
 			status = 'idle';
 			revealed = false;
-			hintOpen = false;
+			hintLevel = 0;
 			hintUsed = false;
 			return;
 		}
@@ -111,7 +113,7 @@
 		attempts = 0;
 		status = 'idle';
 		revealed = false;
-		hintOpen = false;
+		hintLevel = 0;
 		hintUsed = false;
 		finished = false;
 		cleanCount = 0;
@@ -119,7 +121,8 @@
 		changes = [];
 	}
 
-	let hintText = $derived(q?.hint);
+	let hintList = $derived(q?.hints ?? []);
+	let isOpen = $derived(q?.type === 'open');
 	let skillId = $derived(q ? skillOf(q.id) : '');
 	let scored = $derived(results.filter((r) => r.correct).length);
 	let missed = $derived(results.filter((r) => !r.correct));
@@ -137,7 +140,7 @@
 				{/if}
 				<div>
 					<div class="font-pixel text-[10px] text-[#fbd000] uppercase">
-						{title ?? (mode === 'practice' ? 'Practice' : mode === 'test' ? 'Test' : 'Review')}
+						{title ?? (mode === 'practice' ? 'Practice' : mode === 'test' ? 'Test' : mode === 'exercises' ? 'Exercises' : 'Review')}
 					</div>
 					{#if mode === 'practice' && lessonId}
 						<div class="text-xs text-slate-400">{MASTERY_NAMES[progress.mastery(lessonId)]}. Get most right first try to level up.</div>
@@ -164,55 +167,60 @@
 		</header>
 
 		{#key `${run}-${q.id}-${attempt}`}
-			<QuestionView {q} {status} onsubmit={submit} />
+			<QuestionView {q} {status} reveal={status === 'right' || revealed} onsubmit={submit} />
 		{/key}
 
 		{#if mode !== 'test' && status !== 'right'}
-			<div class="mt-4">
-				{#if !hintOpen}
+			<div class="mt-4 space-y-2">
+				{#each hintList.slice(0, hintLevel) as h, i (i)}
+					<div class="rounded-md border-[3px] border-sky-400/60 bg-sky-400/10 p-3 text-sm leading-relaxed text-slate-200" role="note">
+						<span class="font-pixel mr-2 text-[10px] text-sky-300">HINT {i + 1}{hintList.length > 1 ? ' / ' + hintList.length : ''}</span>
+						<Rich text={h} />
+					</div>
+				{/each}
+				{#if hintList.length > 0 && hintLevel < hintList.length}
 					<button
 						type="button"
 						class="font-pixel py-2.5 text-[10px] text-sky-300 underline underline-offset-4 hover:text-sky-200"
 						onclick={() => {
-							hintOpen = true;
+							hintLevel++;
 							hintUsed = true;
-						}}>Need a hint?</button
+						}}>{hintLevel === 0 ? 'Need a hint?' : 'Another hint'}</button
 					>
-				{:else}
-					<div class="rounded-md border-[3px] border-sky-400/60 bg-sky-400/10 p-3 text-sm text-slate-200" role="note">
-						<span class="font-pixel mr-2 text-[10px] text-sky-300">HINT</span>
-						{#if hintText}
-							<Rich text={hintText} />
-						{:else}
-							Re-read the lesson section on <a href={resolve('/learn/[chapter]/[lesson]', { chapter: skillId.split('.')[0], lesson: skillId.split('.')[1] })} target="_blank" class="text-sky-300 underline">
-								{lessonTitle(skillId)}</a
-							>, then try again.
-						{/if}
-						<span class="ml-1 text-xs text-slate-500">(Using a hint means this answer no longer counts as first try.)</span>
-					</div>
+					{#if hintLevel === 0}<span class="ml-2 text-xs text-slate-500">(a hint means this no longer counts as first try)</span>{/if}
+				{:else if hintList.length === 0}
+					<p class="text-xs text-slate-500">
+						Stuck? Re-read <a href={resolve('/learn/[chapter]/[lesson]', { chapter: skillId.split('.')[0], lesson: skillId.split('.')[1] })} target="_blank" class="text-sky-300 underline">{lessonTitle(skillId)}</a> in a new tab.
+					</p>
 				{/if}
 			</div>
 		{/if}
 
-		{#if status === 'wrong'}
+		{#if status === 'wrong' && isOpen}
+			<div role="status" class="mt-4 rounded-md border-[3px] border-amber-400/60 bg-amber-400/10 p-4">
+				<div class="font-pixel text-[11px] text-amber-300">NO WORRIES</div>
+				<p class="mt-1 text-slate-300">Read the model solution again, step by step, and try the same exercise later. It stays on your list.</p>
+				<div class="mt-3"><Button variant="secondary" onclick={advance}>{index + 1 < questions.length ? 'Next question' : 'Finish'}</Button></div>
+			</div>
+		{:else if status === 'wrong'}
 			<div role="status" class="mt-4 rounded-md border-[3px] border-rose-400/60 bg-rose-400/10 p-4">
 				<div class="font-pixel text-[11px] text-rose-300">NOT QUITE</div>
-				<p class="mt-1 text-slate-300">Give it another go. You can use the hint, or reveal the answer.</p>
+				<p class="mt-1 text-slate-300">Give it another go. Use the hints for a nudge, or reveal the full solution.</p>
 				<div class="mt-3 flex flex-wrap gap-2">
 					<Button onclick={retry}>Try again</Button>
-					{#if !revealed}<Button variant="secondary" onclick={() => (revealed = true)}>Show answer</Button>{/if}
+					{#if !revealed}<Button variant="secondary" onclick={() => (revealed = true)}>Show solution</Button>{/if}
 				</div>
 				{#if revealed}
-					<p class="mt-3 text-slate-200"><Rich text={q.explain} /></p>
+					<div class="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-200"><span class="font-pixel mb-1 block text-[10px] text-rose-300">SOLUTION</span><Rich text={q.explain} /></div>
 					<div class="mt-3"><Button variant="secondary" onclick={advance}>{index + 1 < questions.length ? 'Next question' : 'Finish'}</Button></div>
 				{/if}
 			</div>
 		{:else if status === 'right'}
 			<div role="status" class="mt-4 rounded-md border-[3px] border-emerald-400/60 bg-emerald-400/10 p-4">
 				<div class="font-pixel flex items-center gap-2 text-[11px] text-emerald-300">
-					<PixelIcon name="coin" size={18} class="pop" /> CORRECT!
+					<PixelIcon name="coin" size={18} class="pop" /> {isOpen ? 'NICE WORK!' : 'CORRECT!'}
 				</div>
-				<p class="mt-1 text-slate-200"><Rich text={q.explain} /></p>
+				{#if !isOpen}<div class="mt-1 text-sm leading-relaxed whitespace-pre-line text-slate-200"><Rich text={q.explain} /></div>{/if}
 				<div class="mt-3">
 					<Button onclick={advance}>{index + 1 < questions.length ? 'Next question' : 'Finish'}</Button>
 				</div>
@@ -220,7 +228,7 @@
 		{/if}
 	{:else}
 		<div class="py-3" aria-live="polite">
-			{#if mode === 'practice' || mode === 'review'}
+			{#if mode === 'practice' || mode === 'review' || mode === 'exercises'}
 				{@const c = changes[0]}
 				<div class="text-center">
 					{#if mode === 'practice' && c}
@@ -241,8 +249,10 @@
 						</p>
 					{:else}
 						<PixelIcon name="star" size={48} class="pop" />
-						<h3 class="font-pixel mt-2 text-sm text-white">REVIEW DONE</h3>
-						<p class="mt-2 text-slate-300">{levelUps.length} skill{levelUps.length === 1 ? '' : 's'} moved up.</p>
+						<h3 class="font-pixel mt-2 text-sm text-white">{mode === 'exercises' ? 'EXERCISES DONE' : 'REVIEW DONE'}</h3>
+						<p class="mt-2 text-slate-300">
+							{#if mode === 'exercises'}{cleanCount} of {questions.length} solved first try, no hints. Anything you skipped or missed stays on your list.{:else}{levelUps.length} skill{levelUps.length === 1 ? '' : 's'} moved up.{/if}
+						</p>
 					{/if}
 					<p class="font-pixel mt-3 flex items-center justify-center gap-2 text-[11px] text-[#fbd000]">
 						<PixelIcon name="coin" size={18} />+{earned} COINS

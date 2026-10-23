@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { allLessons } from './chapters';
-import { isReady, questionIndex, quizFor } from './registry';
+import { allLessons, chapters } from './chapters';
+import { exercisesFor, isReady, questionIndex, quizFor } from './registry';
 import { mpow } from '../math/mat';
 
 describe('content registry', () => {
@@ -20,7 +20,8 @@ describe('content registry', () => {
 				seen.add(q.id);
 			}
 		}
-		expect(Object.keys(questionIndex).length).toBe(seen.size);
+		const exerciseCount = chapters.reduce((n, c) => n + exercisesFor(c.id).length, 0);
+		expect(Object.keys(questionIndex).length).toBe(seen.size + exerciseCount);
 	});
 
 	it('multiple-choice answers are in range', () => {
@@ -31,6 +32,50 @@ describe('content registry', () => {
 					expect(q.answer, q.id).toBeLessThan(q.choices.length);
 				}
 			}
+		}
+	});
+});
+
+describe('teaching material', () => {
+	const lessonQuestions = allLessons.flatMap((l) => quizFor(l.id));
+	const exerciseQuestions = chapters.flatMap((c) => exercisesFor(c.id));
+
+	it('every question has at least two concrete hints', () => {
+		for (const q of [...lessonQuestions, ...exerciseQuestions]) {
+			expect(q.hints?.length ?? 0, `${q.id} hints`).toBeGreaterThanOrEqual(2);
+			// the first hint explains the idea; later ones may shrink to the bare set-up of the calculation
+			expect(q.hints?.[0].length ?? 0, `${q.id} first hint too short`).toBeGreaterThan(24);
+			for (const h of q.hints ?? []) {
+				expect(h.length, `${q.id} hint too short`).toBeGreaterThan(6);
+				// "Re-read X" is only a hint if it says what to look for
+				expect(/^re-?read/i.test(h) && h.length < 60, `${q.id} vague hint`).toBe(false);
+			}
+		}
+	});
+
+	it('every multiple-choice question explains every choice', () => {
+		for (const q of [...lessonQuestions, ...exerciseQuestions]) {
+			if (q.type !== 'mcq') continue;
+			expect(q.notes?.length, `${q.id} notes`).toBe(q.choices.length);
+			for (const n of q.notes ?? []) expect(n.length, `${q.id} empty note`).toBeGreaterThan(8);
+		}
+	});
+
+	it('every enrich entry belongs to a real question', () => {
+		const modules = import.meta.glob<{ enrich: Record<string, unknown> }>('./enrich/*.ts', { eager: true });
+		for (const m of Object.values(modules)) {
+			for (const id of Object.keys(m.enrich)) expect(questionIndex[id], `orphan enrich ${id}`).toBeDefined();
+		}
+	});
+
+	it('each chapter carries the nine exercises from the notes, numbered consecutively', () => {
+		for (const c of chapters) {
+			const ex = exercisesFor(c.id);
+			expect(ex.length, `${c.id} exercise count`).toBe(9);
+			const nums = ex.map((q) => Number((q.source ?? '').replace('Notes, Exercise ', '').split('.')[1]));
+			for (let i = 1; i < nums.length; i++) expect(nums[i], `${c.id} numbering`).toBe(nums[i - 1] + 1);
+			const ids = new Set(ex.map((q) => q.id));
+			expect(ids.size, `${c.id} duplicate exercise ids`).toBe(ex.length);
 		}
 	});
 });

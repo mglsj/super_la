@@ -1,6 +1,6 @@
 import type { Component } from 'svelte';
 import { allLessons } from './chapters';
-import type { Question } from './types';
+import type { Enrich, Question, QuizBank } from './types';
 import { ch01 } from './quizzes/ch01';
 import { ch02 } from './quizzes/ch02';
 import { ch03 } from './quizzes/ch03';
@@ -25,7 +25,7 @@ import { ch21 } from './quizzes/ch21';
 import { ch22 } from './quizzes/ch22';
 import { ch23 } from './quizzes/ch23';
 import { ch24 } from './quizzes/ch24';
-import { hints } from './quizzes/hints';
+import { hints as oldHints } from './quizzes/hints';
 
 /** Lesson components are discovered from files: content/lessons/<chapter>/<slug>.svelte */
 const modules = import.meta.glob<{ default: Component }>('./lessons/*/*.svelte');
@@ -38,19 +38,40 @@ for (const [path, loader] of Object.entries(modules)) {
 
 export const isReady = (id: string): boolean => id in lessonLoaders;
 
-const withHints = (qs: Question[]): Question[] =>
-	qs.map((q) => (hints[q.id] ? { ...q, hint: hints[q.id] } : q));
+/** Teaching material (hints, per-choice notes, likely slips) lives in content/enrich/*.ts, keyed by question id. */
+const enrichModules = import.meta.glob<{ enrich: Record<string, Enrich> }>('./enrich/*.ts', { eager: true });
+const enrich: Record<string, Enrich> = Object.assign({}, ...Object.values(enrichModules).map((m) => m.enrich));
 
-const banks: Record<string, Question[]> = Object.fromEntries(
-	Object.entries({ ...ch01, ...ch02, ...ch03, ...ch04, ...ch05, ...ch06, ...ch07, ...ch08, ...ch09, ...ch10, ...ch11, ...ch12, ...ch13, ...ch14, ...ch15, ...ch16, ...ch17, ...ch18, ...ch19, ...ch20, ...ch21, ...ch22, ...ch23, ...ch24 }).map(([id, qs]) => [id, withHints(qs)])
-);
+/** The exercises printed at the end of each chapter of the notes: content/exercises/<chapter>.ts */
+const exerciseModules = import.meta.glob<{ exercises: QuizBank }>('./exercises/*.ts', { eager: true });
+const exerciseBanks: QuizBank = Object.assign({}, ...Object.values(exerciseModules).map((m) => m.exercises));
+
+function merge(q: Question): Question {
+	const e = enrich[q.id];
+	const legacy = oldHints[q.id];
+	const hints = e?.hints ?? q.hints ?? (legacy ? [legacy] : undefined);
+	const base = { ...q, hints } as Question;
+	if (base.type === 'mcq') return { ...base, notes: e?.notes ?? base.notes };
+	if (base.type === 'numeric' || base.type === 'vector') return { ...base, slips: e?.slips ?? base.slips };
+	return base;
+}
+
+const withEnrichment = (bank: QuizBank): QuizBank =>
+	Object.fromEntries(Object.entries(bank).map(([id, qs]) => [id, qs.map(merge)]));
+
+const banks: QuizBank = withEnrichment({
+	...ch01, ...ch02, ...ch03, ...ch04, ...ch05, ...ch06, ...ch07, ...ch08, ...ch09, ...ch10, ...ch11, ...ch12,
+	...ch13, ...ch14, ...ch15, ...ch16, ...ch17, ...ch18, ...ch19, ...ch20, ...ch21, ...ch22, ...ch23, ...ch24
+});
+const exercises: QuizBank = withEnrichment(exerciseBanks);
 
 export const quizFor = (lessonId: string): Question[] => banks[lessonId] ?? [];
 
+/** Exercises from the notes for a chapter id like "ch02", in the order the notes print them. */
+export const exercisesFor = (chapterId: string): Question[] => exercises[`${chapterId}.exercises`] ?? [];
+
 export const questionIndex: Record<string, Question> = Object.fromEntries(
-	Object.values(banks)
-		.flat()
-		.map((q) => [q.id, q])
+	[...Object.values(banks), ...Object.values(exercises)].flat().map((q) => [q.id, q])
 );
 
 function shuffle<T>(xs: T[]): T[] {
@@ -71,4 +92,4 @@ export function buildTest(lessonIds: string[], perSkill: number, max = 30): Ques
 	return shuffle(picked).slice(0, max);
 }
 
-export const readyLessons =allLessons.filter((l) => isReady(l.id));
+export const readyLessons = allLessons.filter((l) => isReady(l.id));
