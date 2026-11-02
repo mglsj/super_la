@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { allLessons, chapters } from './chapters';
 import { exercisesFor, isReady, questionIndex, quizFor } from './registry';
+import { papers } from './papers';
 import { mpow } from '../math/mat';
 
 describe('content registry', () => {
@@ -21,7 +22,8 @@ describe('content registry', () => {
 			}
 		}
 		const exerciseCount = chapters.reduce((n, c) => n + exercisesFor(c.id).length, 0);
-		expect(Object.keys(questionIndex).length).toBe(seen.size + exerciseCount);
+		const paperCount = papers.reduce((n, p) => n + p.questions.length, 0);
+		expect(Object.keys(questionIndex).length).toBe(seen.size + exerciseCount + paperCount);
 	});
 
 	it('multiple-choice answers are in range', () => {
@@ -38,7 +40,7 @@ describe('content registry', () => {
 
 describe('teaching material', () => {
 	const lessonQuestions = allLessons.flatMap((l) => quizFor(l.id));
-	const exerciseQuestions = chapters.flatMap((c) => exercisesFor(c.id));
+	const exerciseQuestions = [...chapters.flatMap((c) => exercisesFor(c.id)), ...papers.flatMap((p) => p.questions)];
 
 	it('every question has at least two concrete hints', () => {
 		for (const q of [...lessonQuestions, ...exerciseQuestions]) {
@@ -91,5 +93,21 @@ describe('mpow', () => {
 			[1, 0],
 			[0, 1]
 		]);
+	});
+});
+
+describe('past papers', () => {
+	it('part marks add up to the paper total, and ids are unique', () => {
+		for (const p of papers) {
+			const marks = p.questions.reduce((n, q) => n + Number(q.source?.match(/\[(\d+) mark/)?.[1] ?? 0), 0);
+			expect(marks, `${p.id} marks`).toBe(p.marks);
+			expect(new Set(p.questions.map((q) => q.id)).size, `${p.id} ids`).toBe(p.questions.length);
+		}
+	});
+
+	it('every linked lesson exists', () => {
+		for (const p of papers) {
+			for (const l of p.lessons) expect(isReady(`${l.chapter}.${l.slug}`), `${p.id} → ${l.chapter}/${l.slug}`).toBe(true);
+		}
 	});
 });

@@ -9,6 +9,32 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+
+	const polyCoords = {
+		problem:
+			'Let $W = \\{p\\in P_2 : p(1) = 2p(0)\\}$, which has dimension $2$.\n(a) Verify that $B = (1 + t,\\ t^2 - t)$ is an ordered basis of $W$, and find $[q]_B = (\\alpha,\\beta)^{\\mathsf T}$, where $q = \\alpha(1 + t) + \\beta(t^2 - t)$, for $q(t) = 4 + t + 3t^2$.\n(b) Add one polynomial to $B$ to get a basis of $P_2$. Justify your choice.',
+		method: [
+			'To show a list is a basis of a space whose dimension $n$ you know: check each vector **lies in** the space, and that the list has $n$ **independent** vectors. (Axler: in an $n$-dimensional space, $n$ independent vectors automatically span.)',
+			'Coordinates: write $q = \\alpha\\,b_1 + \\beta\\,b_2$, expand, and **match coefficients** of $1, t, t^2$. Keep the order of the basis.',
+			'Check your coordinates by rebuilding $q$ (and, if you like, that $q$ is in $W$ at all).',
+			'To extend to a basis of a bigger space: add a vector **outside** the span. Then the list stays independent, and with the right count it is a basis.'
+		],
+		steps: [
+			{
+				label: 'B lies in W and is independent',
+				text: '$1 + t$: $p(1) = 2$, $2p(0) = 2$ ✓. $t^2 - t$: $p(1) = 0$, $2p(0) = 0$ ✓. So both lie in $W$.\nThey are not multiples of each other (only one has a $t^2$ term), so they are independent. Two independent vectors in the 2-dimensional $W$ form a **basis**.'
+			},
+			{
+				label: 'Match coefficients',
+				text: '$\\alpha(1 + t) + \\beta(t^2 - t) = \\alpha + (\\alpha - \\beta)t + \\beta t^2$. Compare with $4 + t + 3t^2$:\n- constant: $\\alpha = 4$\n- $t^2$: $\\beta = 3$\n- $t$: $\\alpha - \\beta = 1$ ✓ (consistent, as it must be since $q(1) = 8 = 2q(0)$, so $q\\in W$).\nSo $[q]_B = (4, 3)^{\\mathsf T}$.'
+			},
+			{
+				label: 'Extend to a basis of P₂',
+				text: 'Add a polynomial that is **not** in $W$, for example the constant $1$: $1(1) = 1\\ne2 = 2\\cdot1(0)$.\nSince $1\\notin W = \\operatorname{span}B$, the list $(1 + t,\\ t^2 - t,\\ 1)$ is still independent (a new vector outside the span cannot create a dependence). It has $3 = \\dim P_2$ independent vectors, so it is a **basis of $P_2$**.\n(Directly: $1$ and $1 + t$ give $t$; then $t^2 - t$ gives $t^2$; so the span contains $1, t, t^2$.)'
+			}
+		]
+	};
 
 	let b1 = $state([2, 0]);
 	let b2 = $state([1, 2]);
@@ -72,8 +98,25 @@
 	</p>
 </Callout>
 
+<h2>Coordinates for polynomials</h2>
+<p>
+	Nothing about coordinates needs arrows. In Axler's language, once you fix an <strong class="text-slate-50">ordered basis</strong> <Tex tex={'B = (b_1, \\dots, b_n)'} /> of any vector space,
+	each vector <Tex tex="q" /> has exactly one list of weights with <Tex tex={'q = \\alpha_1b_1 + \\dots + \\alpha_nb_n'} />, and <Tex tex={'[q]_B = (\\alpha_1, \\dots, \\alpha_n)^{\\mathsf T}'} />.
+	For polynomials you find the weights by expanding and <em>matching coefficients</em> of <Tex tex={'1, t, t^2, \\dots'} />.
+</p>
+<Callout kind="theorem" title="Extending a basis">
+	<p>
+		If <Tex tex={'(b_1,\\dots,b_k)'} /> is independent and <Tex tex="v" /> is not in their span, then <Tex tex={'(b_1,\\dots,b_k,v)'} /> is still independent. Repeat until you have
+		<Tex tex={'\\dim V'} /> vectors: that list is a basis of <Tex tex="V" />.
+	</p>
+</Callout>
+
+<WorkedExample title="polynomial coordinates and extending a basis" problem={polyCoords.problem} method={polyCoords.method} steps={polyCoords.steps} credit="Ordered bases and extension after Axler, Chapter 2; matching coefficients as in Strang." />
+
 <Recap
 	points={[
+		'Coordinates in a polynomial basis: expand $\\alpha b_1 + \\beta b_2 + \\dots$ and match the coefficients of $1, t, t^2$.',
+		'Extend a basis by adding a vector outside the current span, until you have $\\dim V$ vectors.',
 		'$[\\mathbf v]_B$ lists the weights that build $\\mathbf v$ from the basis vectors.',
 		'With $P$ = matrix of basis columns: $\\mathbf v = P[\\mathbf v]_B$ and $[\\mathbf v]_B = P^{-1}\\mathbf v$.',
 		'The same vector has different coordinates in different bases.'

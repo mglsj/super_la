@@ -8,6 +8,7 @@
 		{ id: '/', href: resolve('/'), label: 'Map' },
 		{ id: '/review', href: resolve('/review'), label: 'Review' },
 		{ id: '/challenge', href: resolve('/challenge'), label: 'Challenge' },
+		{ id: '/papers', href: resolve('/papers'), label: 'Papers' },
 		{ id: '/playground', href: resolve('/playground'), label: 'Lab' },
 		{ id: '/profile', href: resolve('/profile'), label: 'Me' }
 	];

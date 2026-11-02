@@ -26,6 +26,7 @@ import { ch22 } from './quizzes/ch22';
 import { ch23 } from './quizzes/ch23';
 import { ch24 } from './quizzes/ch24';
 import { hints as oldHints } from './quizzes/hints';
+import { papers } from './papers';
 
 /** Lesson components are discovered from files: content/lessons/<chapter>/<slug>.svelte */
 const modules = import.meta.glob<{ default: Component }>('./lessons/*/*.svelte');
@@ -71,7 +72,7 @@ export const quizFor = (lessonId: string): Question[] => banks[lessonId] ?? [];
 export const exercisesFor = (chapterId: string): Question[] => exercises[`${chapterId}.exercises`] ?? [];
 
 export const questionIndex: Record<string, Question> = Object.fromEntries(
-	[...Object.values(banks), ...Object.values(exercises)].flat().map((q) => [q.id, q])
+	[...Object.values(banks), ...Object.values(exercises), ...papers.map((p) => p.questions)].flat().map((q) => [q.id, q])
 );
 
 function shuffle<T>(xs: T[]): T[] {

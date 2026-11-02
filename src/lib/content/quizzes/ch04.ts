@@ -87,6 +87,33 @@ export const ch04: QuizBank = {
 			],
 			answer: 0,
 			explain: 'Dimension 0, 1 or 2: a point, a line through the origin, or everything.'
+		},
+		{
+			id: 'ch04.subspaces.5',
+			type: 'numeric',
+			prompt: 'What is the dimension of $W = \\{p\\in P_2 : p(2) = 0\\}$?',
+			answer: 2,
+			explain: 'With $p = a + bt + ct^2$ the condition is $a + 2b + 4c = 0$, one equation in three unknowns: $a = -2b - 4c$ with $b, c$ free. Basis $\\{t - 2,\\ t^2 - 4\\}$, dimension $2$.'
+		},
+		{
+			id: 'ch04.subspaces.6',
+			type: 'numeric',
+			prompt: 'What is the dimension of $\\{p\\in P_3 : p(0) = p(1)\\}$? ($P_3$ has dimension 4.)',
+			answer: 3,
+			explain: 'With $p = a + bt + ct^2 + dt^3$ the condition is $b + c + d = 0$: one equation, so $4 - 1 = 3$ free parameters ($a$, $c$, $d$).'
+		},
+		{
+			id: 'ch04.subspaces.7',
+			type: 'mcq',
+			prompt: 'Which of these is a subspace of $P_2$?',
+			choices: [
+				'$\\{p : p(0) = p(1)\\}$',
+				'$\\{p : p(0)\\,p(1) = 0\\}$',
+				'$\\{p : p(0) = 1\\}$',
+				'$\\{p : p(1)\\ge0\\}$'
+			],
+			answer: 0,
+			explain: '$p(0) - p(1) = 0$ is a linear condition (it is the kernel of $p\\mapsto p(0) - p(1)$). The others fail: a product condition breaks addition, $p(0) = 1$ misses $0$, and $p(1)\\ge0$ breaks scaling by $-1$.'
 		}
 	],
 	'ch04.column-null-space': [

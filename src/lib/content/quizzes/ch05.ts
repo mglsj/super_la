@@ -101,6 +101,20 @@ export const ch05: QuizBank = {
 			prompt: 'Find the coordinates of $(4, 4)$ in the basis $(1, 1),\\ (1, -1)$.',
 			answer: [4, 0],
 			explain: '$(4,4) = 4\\cdot(1,1) + 0\\cdot(1,-1)$.'
+		},
+		{
+			id: 'ch05.coordinates.5',
+			type: 'vector',
+			prompt: 'In the ordered basis $B = (1 + t,\\ t)$ of $P_1$, find $[q]_B$ for $q(t) = 3 + 5t$.',
+			answer: [3, 2],
+			explain: '$\\alpha(1 + t) + \\beta t = \\alpha + (\\alpha + \\beta)t$. Constant: $\\alpha = 3$; $t$: $\\alpha + \\beta = 5$, so $\\beta = 2$.'
+		},
+		{
+			id: 'ch05.coordinates.6',
+			type: 'vector',
+			prompt: 'In the ordered basis $B = (1,\\ t - 1,\\ (t - 1)^2)$ of $P_2$, find $[t^2]_B$.',
+			answer: [1, 2, 1],
+			explain: '$t^2 = ((t - 1) + 1)^2 = 1 + 2(t - 1) + (t - 1)^2$, so $[t^2]_B = (1, 2, 1)$. (Check by expanding: $1 + 2t - 2 + t^2 - 2t + 1 = t^2$ ✓.)'
 		}
 	],
 	'ch05.dimension': [

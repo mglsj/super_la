@@ -187,6 +187,41 @@ export const ch03: QuizBank = {
 			choices: ['When a zero pivot appears', 'When $A$ is symmetric', 'When $A$ has integer entries', 'Never'],
 			answer: 0,
 			explain: 'You cannot divide by a zero pivot; swap rows first, which gives $PA = LU$.'
+		},
+		{
+			id: 'ch03.lu.6',
+			type: 'mcq',
+			prompt: 'You are given $A = LU$ and want to solve $A\\mathbf x = \\mathbf b$ without forming $A$. What do you solve first?',
+			choices: [
+				'$L\\mathbf y = \\mathbf b$, by forward substitution',
+				'$U\\mathbf x = \\mathbf b$, by back substitution',
+				'$U\\mathbf y = \\mathbf b$, by forward substitution',
+				'$\\mathbf x = U^{-1}L^{-1}\\mathbf b$, after computing both inverses'
+			],
+			answer: 0,
+			explain: '$A\\mathbf x = L(U\\mathbf x)$. Put $\\mathbf y = U\\mathbf x$: first $L\\mathbf y = \\mathbf b$ (top to bottom), then $U\\mathbf x = \\mathbf y$ (bottom to top).'
+		},
+		{
+			id: 'ch03.lu.7',
+			type: 'vector',
+			prompt: 'With $L = \\begin{bmatrix}1&0&0\\\\2&1&0\\\\0&-1&1\\end{bmatrix}$, solve $L\\mathbf y = (2,5,1)$ by forward substitution.',
+			answer: [2, 1, 2],
+			explain: '$y_1 = 2$; $2y_1 + y_2 = 5$ gives $y_2 = 1$; $-y_2 + y_3 = 1$ gives $y_3 = 2$.'
+		},
+		{
+			id: 'ch03.lu.8',
+			type: 'vector',
+			prompt: 'With $U = \\begin{bmatrix}1&1&0\\\\0&1&1\\\\0&0&2\\end{bmatrix}$ and $\\mathbf y = (2,1,2)$, solve $U\\mathbf x = \\mathbf y$ by back substitution.',
+			answer: [2, 0, 1],
+			explain: '$2x_3 = 2$ gives $x_3 = 1$; $x_2 + x_3 = 1$ gives $x_2 = 0$; $x_1 + x_2 = 2$ gives $x_1 = 2$.'
+		},
+		{
+			id: 'ch03.lu.9',
+			type: 'mcq',
+			prompt: 'You have $PA = LU$ (with a row exchange $P$). To solve $A\\mathbf x = \\mathbf b$, what is the forward-substitution system?',
+			choices: ['$L\\mathbf y = P\\mathbf b$', '$L\\mathbf y = \\mathbf b$', '$U\\mathbf y = P\\mathbf b$', '$PL\\mathbf y = \\mathbf b$, solved without permuting'],
+			answer: 0,
+			explain: 'Multiply $A\\mathbf x = \\mathbf b$ by $P$: $PA\\mathbf x = P\\mathbf b$, i.e. $LU\\mathbf x = P\\mathbf b$. So permute $\\mathbf b$ the same way, solve $L\\mathbf y = P\\mathbf b$, then $U\\mathbf x = \\mathbf y$.'
 		}
 	]
 };

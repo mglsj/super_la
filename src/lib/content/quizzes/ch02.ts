@@ -185,6 +185,43 @@ export const ch02: QuizBank = {
 			choices: ['a line', 'a single point', 'a plane', 'nothing'],
 			answer: 0,
 			explain: 'Two equations in three unknowns leave one free variable, and the solutions trace out a line.'
+		},
+		{
+			id: 'ch02.solution-sets.6',
+			type: 'numeric',
+			prompt:
+				'Consider $\\begin{bmatrix}1&2&0\\\\0&k&1\\\\2&4&1\\end{bmatrix}\\mathbf x = \\begin{bmatrix}1\\\\1\\\\\\beta\\end{bmatrix}$. For which value of $k$ is the solution **not** unique (whatever $\\beta$ is)?',
+			answer: 0,
+			explain: '$R_3 - 2R_1$ gives $[0\\ 0\\ 1\\mid\\beta - 2]$. The pivots are $1, k, 1$, so uniqueness fails exactly when $k = 0$.'
+		},
+		{
+			id: 'ch02.solution-sets.7',
+			type: 'numeric',
+			prompt: 'Same system with $k = 0$. For which $\\beta$ are there infinitely many solutions (rather than none)?',
+			answer: 3,
+			explain: 'With $k = 0$ rows 2 and 3 read $[0\\ 0\\ 1\\mid1]$ and $[0\\ 0\\ 1\\mid\\beta - 2]$. Subtracting: $[0\\ 0\\ 0\\mid\\beta - 3]$. Consistent only for $\\beta = 3$; then $x_2$ is free.'
+		},
+		{
+			id: 'ch02.solution-sets.8',
+			type: 'vector',
+			prompt: 'With $k = 0$, $\\beta = 3$ the solutions are $\\mathbf x_p + s\\,\\mathbf n$. Give the null-space vector $\\mathbf n$ whose second entry is $1$.',
+			answer: [-2, 1, 0],
+			explain: 'The equations are $x_1 + 2x_2 = 1$, $x_3 = 1$. The homogeneous version gives $x_3 = 0$, $x_1 = -2x_2$: $\\mathbf n = (-2,1,0)$. (A particular solution is $(1,0,1)$.)'
+		},
+		{
+			id: 'ch02.solution-sets.9',
+			type: 'numeric',
+			prompt: 'The system $x + y = 1,\\ x - y = 3,\\ x + ky = 0$ has three equations in two unknowns. For which $k$ is it consistent?',
+			answer: 2,
+			explain: 'The first two equations force $x = 2$, $y = -1$. The third then needs $2 - k = 0$, so $k = 2$ (unique solution); for every other $k$ there is no solution.'
+		},
+		{
+			id: 'ch02.solution-sets.10',
+			type: 'mcq',
+			prompt: 'A consistent system has 3 equations and 5 unknowns. How many solutions can it have?',
+			choices: ['Infinitely many, always', 'Exactly one', 'Exactly one or infinitely many, depending on the entries', 'Exactly two'],
+			answer: 0,
+			explain: 'There are at most 3 pivots for 5 unknowns, so at least 2 free variables. A consistent wide system always has infinitely many solutions.'
 		}
 	]
 };

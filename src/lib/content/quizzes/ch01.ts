@@ -226,6 +226,41 @@ export const ch01: QuizBank = {
 			prompt: 'Find a direction vector of the line through $(1, 1)$ and $(4, 5)$.',
 			answer: [3, 4],
 			explain: 'Subtract the endpoints: $(4-1,\\ 5-1) = (3, 4)$. Any nonzero multiple also works.'
+		},
+		{
+			id: 'ch01.lines-planes.4',
+			type: 'numeric',
+			prompt: 'The line $\\mathbf r(t) = (1,1,0) + t(1,0,1)$ and the point $\\mathbf b = (4,2,1)$. For which $t$ is $\\mathbf r(t)$ the point of the line closest to $\\mathbf b$?',
+			answer: 2,
+			explain: 'Require $(\\mathbf b - \\mathbf r(t))\\cdot\\mathbf d = 0$: $\\mathbf b - \\mathbf r(t) = (3 - t,\\ 1,\\ 1 - t)$, dot $(1,0,1)$ gives $4 - 2t = 0$, so $t = 2$.'
+		},
+		{
+			id: 'ch01.lines-planes.5',
+			type: 'numeric',
+			prompt: 'For the same line and $\\mathbf b = (4,2,1)$, what is the distance from $\\mathbf b$ to the line? (Decimal.)',
+			answer: 1.732,
+			tol: 0.01,
+			explain: 'The closest point is $\\mathbf r(2) = (3,1,2)$, $\\mathbf b - \\mathbf p = (1,1,-1)$ (perpendicular to $(1,0,1)$ ✓), length $\\sqrt3\\approx1.73$.'
+		},
+		{
+			id: 'ch01.lines-planes.6',
+			type: 'mcq',
+			prompt: 'Which of these lines in $\\mathbb R^3$ is a subspace?',
+			choices: [
+				'$\\{(2 + 2t,\\ 1 + t,\\ 0) : t\\in\\mathbb R\\}$',
+				'$\\{(t,\\ t,\\ 1) : t\\in\\mathbb R\\}$',
+				'$\\{(1 + t,\\ t,\\ 0) : t\\in\\mathbb R\\}$',
+				'$\\{(1,\\ t,\\ t) : t\\in\\mathbb R\\}$'
+			],
+			answer: 0,
+			explain: 'At $t = -1$ the first line passes through $(0,0,0)$: its base point $(2,1,0)$ is a multiple of the direction $(2,1,0)$, so it equals $\\operatorname{span}\\{(2,1,0)\\}$. The others never reach $\\mathbf 0$.'
+		},
+		{
+			id: 'ch01.lines-planes.7',
+			type: 'numeric',
+			prompt: 'What is the distance from $\\mathbf b = (1,2,3)$ to the plane $2x - y + 2z = 3$?',
+			answer: 1,
+			explain: '$\\dfrac{|\\mathbf n\\cdot\\mathbf b - d|}{\\lVert\\mathbf n\\rVert} = \\dfrac{|2 - 2 + 6 - 3|}{\\sqrt{4 + 1 + 4}} = \\dfrac33 = 1$.'
 		}
 	],
 	'ch01.cross-product': [

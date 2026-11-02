@@ -9,6 +9,36 @@
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
 	import Slider from '#lib/components/lesson/Slider.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+
+	const poly = {
+		problem:
+			'Let $P_2$ be the polynomials of degree at most $2$.\n(a) Show that $W = \\{p\\in P_2 : p(1) = 2p(0)\\}$ is a subspace. Writing $p(t) = a + bt + ct^2$, find a basis of $W$ and its dimension.\n(b) Is $S = \\{p\\in P_2 : p(0)\\,p(2) = 0\\}$ a subspace? If not, give two explicit polynomials showing a condition fails.',
+		method: [
+			'**Linear condition** (each term is a single value $p(\\cdot)$, $p\'(\\cdot)$, ... to the first power, $= 0$ after moving everything to one side): check the three subspace conditions directly, or note the set is the kernel of a linear map.',
+			'**Basis**: substitute $p = a + bt + ct^2$, turn the condition into equations on $a,b,c$, solve with free parameters, and read off one polynomial per free parameter.',
+			'**Dimension** = number of free parameters (equivalently $3$ minus the number of independent conditions).',
+			'**Nonlinear condition** (a product, a square, an "or", a "$= 1$"): suspect it is not a subspace. Find two members whose **sum** leaves the set, or a member whose **multiple** leaves it, or show $0$ is missing.'
+		],
+		steps: [
+			{
+				label: 'W is a subspace',
+				text: '- **Zero**: the zero polynomial has $0(1) = 0 = 2\\cdot0(0)$, so $0\\in W$.\n- **Sums**: if $p, q\\in W$ then $(p + q)(1) = p(1) + q(1) = 2p(0) + 2q(0) = 2(p + q)(0)$.\n- **Multiples**: $(cp)(1) = c\\,p(1) = c\\cdot2p(0) = 2(cp)(0)$.\nShortcut: $W = \\ker T$ for the linear map $T(p) = p(1) - 2p(0)$, and kernels are always subspaces.'
+			},
+			{
+				label: 'Turn the condition into equations',
+				text: 'With $p = a + bt + ct^2$: $p(0) = a$ and $p(1) = a + b + c$. The condition $a + b + c = 2a$ becomes $a = b + c$.'
+			},
+			{
+				label: 'Parametrise and read off a basis',
+				text: '$b$ and $c$ are free, $a = b + c$:\n$p = (b + c) + bt + ct^2 = b(1 + t) + c(1 + t^2)$.\nSo $W = \\operatorname{span}\\{1 + t,\\ 1 + t^2\\}$. These two are independent (only the second has a $t^2$ term, only the first has a $t$ term), so they form a **basis** and $\\dim W = 2$.\nSanity check: one linear condition cut $\\dim P_2 = 3$ down to $2$.'
+			},
+			{
+				label: 'Is S a subspace?',
+				text: 'The condition is a **product**, so test closure under addition. $p(t) = t$ has $p(0) = 0$, so $p\\in S$. $q(t) = 2 - t$ has $q(2) = 0$, so $q\\in S$.\nBut $(p + q)(t) = 2$, and $(p + q)(0)\\,(p + q)(2) = 2\\cdot2 = 4\\ne0$. So $p + q\\notin S$: **not closed under addition, not a subspace**.\n(Note $S$ does contain $0$ and is closed under scaling, so those checks alone would not catch it: $S$ is the union of two subspaces, $\\{p(0) = 0\\}\\cup\\{p(2) = 0\\}$.)'
+			}
+		]
+	};
 
 	type SetDef = { name: string; has: (v: number[]) => boolean; line?: { point: number[]; dir: number[] } };
 	const near = (x: number) => Math.abs(x) < 1e-6;
@@ -105,8 +135,31 @@
 	The span of any collection of vectors is always a subspace, and every subspace is the span of something.
 </p>
 
+<h2>Subspaces of functions, cut out by conditions</h2>
+<p>
+	Everything above works in any vector space, not just <Tex tex={'\\mathbb R^n'} />. Axler's favourite examples are spaces of polynomials described by a condition, such as
+	<Tex tex={'\\{p\\in P_2 : p(3) = 0\\}'} />. The rule of thumb:
+</p>
+<Callout kind="theorem" title="Linear conditions give subspaces">
+	<p>
+		If the condition says some <strong class="text-slate-50">linear</strong> expression in <Tex tex="p" /> equals zero (for example <Tex tex={'p(0) - p(1) = 0'} />,
+		<Tex tex={'p\'(2) = 0'} />, <Tex tex={'\\int_0^1 p = 0'} />), the set is the kernel of a linear map, so it is a subspace. Products, squares, "or", or a nonzero right-hand side
+		(<Tex tex={'p(0) = 1'} />) usually break it.
+	</p>
+</Callout>
+<Callout kind="warning" title="Showing something is not a subspace">
+	<p>
+		Write down <strong class="text-slate-50">specific</strong> members and a specific failure: "<Tex tex="p = t" /> and <Tex tex="q = 2 - t" /> are in <Tex tex="S" />, but
+		<Tex tex="p + q = 2" /> is not". A general argument ("products are not linear") earns no marks without an explicit counterexample.
+	</p>
+</Callout>
+
+<WorkedExample title="a polynomial subspace and a non-subspace" problem={poly.problem} method={poly.method} steps={poly.steps} credit="Polynomial subspaces in the style of Axler, Chapter 1; parametrising to get a basis as in Strang's null-space recipe." />
+
 <Recap
 	points={[
+		'A set cut out by a **linear** condition (e.g. $p(0) = p(1)$) is a subspace: it is a kernel. Find a basis by parametrising $p = a + bt + ct^2$.',
+		'To show a set is not a subspace, give explicit members whose sum (or a multiple) leaves the set.',
 		'A **subspace** contains $\\mathbf 0$ and is closed under adding and scaling.',
 		'Lines and planes through the origin are subspaces; shifted lines, quadrants and unions of lines are not.',
 		'The span of any set of vectors is a subspace.'

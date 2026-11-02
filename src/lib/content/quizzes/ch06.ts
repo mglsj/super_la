@@ -94,6 +94,13 @@ export const ch06: QuizBank = {
 			prompt: 'Differentiation maps polynomials of degree at most $3$ to polynomials. What is the dimension of its kernel?',
 			answer: 1,
 			explain: 'Only the constant polynomials have derivative $0$, a one-dimensional space.'
+		},
+		{
+			id: 'ch06.rank-nullity.5',
+			type: 'numeric',
+			prompt: "What is the dimension of $\\{p\\in P_3 : p(1) = 0\\ \\text{and}\\ p'(1) = 0\\}$? ($\\dim P_3 = 4$.)",
+			answer: 2,
+			explain: "It is the kernel of $T(p) = (p(1),\\ p'(1))$. $T(1) = (1,0)$ and $T(t) = (1,1)$ are independent, so $\\operatorname{rank}T = 2$ and the dimension is $4 - 2 = 2$. A basis: $(t - 1)^2,\\ (t - 1)^3$."
 		}
 	],
 	'ch06.matrix-of-a-map': [
