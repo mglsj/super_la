@@ -6,6 +6,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { intersectionDim, commutant } from '#lib/content/worked/ch05.js';
 
 	// columns are the three vectors
 	let m = $state<Mat>([
@@ -54,6 +56,26 @@
 	<li>In an <Tex tex="n" />-dimensional space, any <Tex tex="n" /> independent vectors automatically span, and any <Tex tex="n" /> spanning vectors are automatically independent. You only need to check one.</li>
 	<li>A subspace of <Tex tex="V" /> has dimension at most <Tex tex={'\\dim V'} />, with equality only if it is all of <Tex tex="V" />.</li>
 </ul>
+
+<h2>Dimensions of sums and intersections</h2>
+<Callout kind="theorem" title="Dimension of a sum">
+	<p>
+		For subspaces <Tex tex="U, W" /> of a finite-dimensional space,
+		<Tex display tex={'\\dim(U + W) = \\dim U + \\dim W - \\dim(U\\cap W).'} />
+		Since <Tex tex={'U + W'} /> sits inside the whole space of dimension <Tex tex="n" />, this forces <Tex tex={'\\dim(U\\cap W)\\ge\\dim U + \\dim W - n'} />. Two subspaces that are "too big"
+		for the room must overlap.
+	</p>
+</Callout>
+
+<WorkedExample {...intersectionDim} />
+
+<h2>Finding a basis of a subspace of matrices</h2>
+<p>
+	Matrices are vectors too: <Tex tex={'M_2(\\mathbb R)'} /> has dimension 4, with basis the four matrix units. A subspace given by a matrix equation is handled exactly like a null space: write the
+	unknown matrix with letters, turn the condition into linear equations on the letters, solve with free parameters.
+</p>
+
+<WorkedExample {...commutant} />
 
 <Recap
 	points={[

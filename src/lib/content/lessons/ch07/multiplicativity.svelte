@@ -6,6 +6,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { detRules } from '#lib/content/worked/ch07.js';
 
 	let A = $state<Mat>([
 		[2, 1],
@@ -54,6 +56,23 @@
 	<li>Similar matrices have the same determinant: <Tex tex={'\\det(P^{-1}AP) = \\det(P)^{-1}\\det(A)\\det(P) = \\det A'} />. The determinant belongs to the <em>map</em>, not to any basis.</li>
 	<li>But <Tex tex={'\\det(A+B)'} /> is <em>not</em> <Tex tex={'\\det A + \\det B'} /> in general. Determinants respect products, not sums.</li>
 </ul>
+
+<h2>The rules you will be asked to use</h2>
+<Callout kind="theorem" title="Determinant rules (n × n matrices)">
+	<p>
+		<Tex tex={'\\det(AB) = \\det A\\det B'} />, <Tex tex={'\\det A^{\\mathsf T} = \\det A'} />, <Tex tex={'\\det(A^{-1}) = 1/\\det A'} />, <Tex tex={'\\det(cA) = c^n\\det A'} />, and
+		<Tex tex={'\\det(\\operatorname{adj}A) = (\\det A)^{n-1}'} />. The adjugate <Tex tex={'\\operatorname{adj}A'} /> is the transpose of the matrix of cofactors (next lesson); the key identity
+		is <Tex tex={'A\\,\\operatorname{adj}A = (\\det A)\\,I'} />.
+	</p>
+</Callout>
+<Callout kind="warning">
+	<p>
+		<Tex tex={'\\det(cA)\\ne c\\det A'} /> (unless <Tex tex="n = 1" />), and <Tex tex={'\\det(A + B)\\ne\\det A + \\det B'} />. The determinant is linear in <em>each row separately</em>, not in
+		the whole matrix.
+	</p>
+</Callout>
+
+<WorkedExample {...detRules} />
 
 <Recap
 	points={[

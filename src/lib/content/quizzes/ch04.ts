@@ -181,6 +181,13 @@ export const ch04: QuizBank = {
 			prompt: 'A matrix has column rank $3$. What is the dimension of its row space?',
 			answer: 3,
 			explain: 'Row rank equals column rank.'
+		},
+		{
+			id: 'ch04.four-subspaces.5',
+			type: 'vector',
+			prompt: 'For $A = \\begin{bmatrix}1&2\\\\2&4\\\\0&1\\end{bmatrix}$, $A\\mathbf x = \\mathbf b$ is solvable exactly when $\\mathbf y\\cdot\\mathbf b = 0$ for a vector $\\mathbf y$ spanning $N(A^{\\mathsf T})$. Give $\\mathbf y$ with second entry $1$.',
+			answer: [-2, 1, 0],
+			explain: '$\\mathbf y$ must be orthogonal to both columns: $y_1 + 2y_2 = 0$ and $2y_1 + 4y_2 + y_3 = 0$. So $y_3 = 0$ and $y_1 = -2y_2$: $\\mathbf y = (-2,1,0)$, i.e. the condition is $-2b_1 + b_2 = 0$.'
 		}
 	]
 };

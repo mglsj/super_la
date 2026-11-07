@@ -10,6 +10,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { similarityPowers } from '#lib/content/worked/ch06.js';
 
 	// A: reflection across the line y = x, written in the standard basis
 	const A: Mat = [
@@ -73,6 +75,14 @@
 <p>
 	Similar matrices are the <em>same map in different coordinates</em>, so they share everything that does not depend on coordinates: rank, determinant, trace and eigenvalues. Finding a basis that makes the matrix diagonal is the goal of chapters 8 and 9.
 </p>
+
+<h2>Using a good basis to compute powers</h2>
+<p>
+	The payoff of changing basis: if <Tex tex={'P^{-1}AP = D'} /> is simple (diagonal), then <Tex tex={'A = PDP^{-1}'} /> and every power is <Tex tex={'A^k = PD^kP^{-1}'} />, because the
+	inner factors <Tex tex={'P^{-1}P'} /> cancel. Trace and determinant cannot change under <Tex tex={'A\\mapsto P^{-1}AP'} />, which gives a free check on the arithmetic.
+</p>
+
+<WorkedExample {...similarityPowers} />
 
 <Recap
 	points={[

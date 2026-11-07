@@ -10,6 +10,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { evaluationMap } from '#lib/content/worked/ch06.js';
 	import Slider from '#lib/components/lesson/Slider.svelte';
 
 	let A = $state<Mat>([
@@ -76,6 +78,14 @@
 <p>
 	Why does the kernel decide injectivity? If <Tex tex={'T\\mathbf u = T\\mathbf v'} /> then by linearity <Tex tex={'T(\\mathbf u - \\mathbf v) = \\mathbf 0'} />, so <Tex tex={'\\mathbf u - \\mathbf v'} /> is in the kernel. If the kernel is just <Tex tex={'\\mathbf 0'} />, then <Tex tex={'\\mathbf u = \\mathbf v'} />.
 </p>
+
+<h2>Kernel and image of a map on polynomials</h2>
+<p>
+	For a map out of <Tex tex={'P_n'} />, first write its matrix using the basis <Tex tex={'1, t, \\dots, t^n'} />. Then every question becomes a matrix question: the kernel is the null space,
+	the image is the column space, and rank–nullity checks your work.
+</p>
+
+<WorkedExample {...evaluationMap} />
 
 <Recap
 	points={[

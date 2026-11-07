@@ -67,7 +67,7 @@ export const enrich: Record<string, Enrich> = {
 	},
 	'ch06.rank-nullity.5': {
 		hints: [
-			"Package both conditions as $T(p) = (p(1),\\ p'(1))$, a linear map $P_3\\to\\mathbb R^2$. The set is $\\ker T$.",
+			'Package both conditions as $T(p) = (p(-1),\\ p(2))$, a linear map $P_3\\to\\mathbb R^2$. The set is $\\ker T$.',
 			'Find $\\operatorname{rank}T$ from $T(1)$ and $T(t)$, then use $\\dim\\ker T = 4 - \\operatorname{rank}T$.'
 		],
 		slips: [{ value: 3, note: 'There are two independent conditions, not one, so the dimension drops by 2.' }]

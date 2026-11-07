@@ -7,6 +7,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { detByElimination, permutationSign, adjugateCramer } from '#lib/content/worked/ch07.js';
 
 	let m = $state<Mat>([
 		[2, 1, 3],
@@ -78,6 +80,42 @@
 		(this matrix needs a row swap, which just flips a sign).
 	{/if}
 </p>
+
+<h2>Exam technique: elimination with bookkeeping</h2>
+<p>
+	For anything larger than <Tex tex={'3\\times3'} />, elimination is far less work than cofactors. The only thing to get right is the running factor: swaps flip the sign, pulling a factor out
+	of a row multiplies by it, and adding multiples of rows changes nothing.
+</p>
+
+<WorkedExample {...detByElimination} />
+
+<h2>Method 3: the Leibniz (permutation) formula</h2>
+<p>
+	Expanding cofactors all the way down gives one product for every way of choosing one entry from each row and each column. Such a choice is a permutation <Tex tex={'\\sigma'} /> (row
+	<Tex tex="i" /> uses column <Tex tex={'\\sigma(i)'} />), and
+</p>
+<Tex display tex={'\\det M = \\sum_{\\sigma}\\operatorname{sgn}(\\sigma)\\,m_{1\\sigma(1)}\\,m_{2\\sigma(2)}\\cdots m_{n\\sigma(n)}.'} />
+<p>
+	The sign is <Tex tex="+1" /> for an even number of swaps and <Tex tex="-1" /> for odd. For <Tex tex={'n = 4'} /> there are <Tex tex="4! = 24" /> terms, which is why nobody computes with it; but
+	exams ask for single terms.
+</p>
+
+<WorkedExample {...permutationSign} />
+
+<h2>The adjugate, the inverse and Cramer's rule</h2>
+<Callout kind="theorem" title="Cofactors build the inverse">
+	<p>
+		Let <Tex tex="C" /> be the matrix of cofactors <Tex tex={'C_{ij} = (-1)^{i+j}M_{ij}'} /> and <Tex tex={'\\operatorname{adj}A = C^{\\mathsf T}'} />. Then
+		<Tex tex={'A\\,\\operatorname{adj}A = (\\det A)I'} />: row <Tex tex="i" /> of <Tex tex="A" /> times its own cofactors is the expansion of <Tex tex={'\\det A'} />, and times another row's cofactors is
+		the expansion of a matrix with two equal rows, which is <Tex tex="0" />. So <Tex tex={'A^{-1} = \\operatorname{adj}A/\\det A'} />.
+	</p>
+	<p>
+		<strong class="text-slate-50">Cramer's rule</strong> reads off the solution of <Tex tex={'A\\mathbf x = \\mathbf b'} /> from this: <Tex tex={'x_j = \\det A_j/\\det A'} />, where
+		<Tex tex={'A_j'} /> is <Tex tex="A" /> with column <Tex tex="j" /> replaced by <Tex tex={'\\mathbf b'} />.
+	</p>
+</Callout>
+
+<WorkedExample {...adjugateCramer} />
 
 <Recap
 	points={[

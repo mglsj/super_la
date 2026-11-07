@@ -99,6 +99,20 @@ export const ch07: QuizBank = {
 			choices: ['No', 'Yes, always', 'Only for $2\\times2$ matrices', 'Only for invertible matrices'],
 			answer: 0,
 			explain: 'Determinants respect products, not sums. For $A = B = I_2$: $\\det(2I) = 4$, but $1 + 1 = 2$.'
+		},
+		{
+			id: 'ch07.multiplicativity.5',
+			type: 'numeric',
+			prompt: '$A$ is $4\\times4$ with $\\det A = 5$. What is $\\det(2A)$?',
+			answer: 80,
+			explain: '$\\det(cA) = c^n\\det A$ with $n = 4$: $2^4\\cdot5 = 80$.'
+		},
+		{
+			id: 'ch07.multiplicativity.6',
+			type: 'numeric',
+			prompt: '$A$ is $3\\times3$ with $\\det A = 4$. What is $\\det(\\operatorname{adj}A)$?',
+			answer: 16,
+			explain: '$A\\,\\operatorname{adj}A = (\\det A)I$ gives $\\det A\\cdot\\det(\\operatorname{adj}A) = (\\det A)^3$, so $\\det(\\operatorname{adj}A) = (\\det A)^2 = 16$.'
 		}
 	],
 	'ch07.cofactors': [
@@ -130,6 +144,27 @@ export const ch07: QuizBank = {
 			prompt: 'Compute $\\det\\begin{bmatrix} 2 & 1 & 3 \\\\ 0 & 4 & 1 \\\\ 1 & 0 & 2 \\end{bmatrix}$.',
 			answer: 5,
 			explain: 'Expand along row 1: $2(8 - 0) - 1(0 - 1) + 3(0 - 4) = 16 + 1 - 12 = 5$.'
+		},
+		{
+			id: 'ch07.cofactors.5',
+			type: 'numeric',
+			prompt: 'What is the sign of the permutation of $\\{1,2,3,4\\}$ with $\\sigma(1) = 2$, $\\sigma(2) = 3$, $\\sigma(3) = 1$, $\\sigma(4) = 4$? (Enter $1$ or $-1$.)',
+			answer: 1,
+			explain: '$1\\to2\\to3\\to1$ is a 3-cycle, which is $2$ transpositions, and $4$ is fixed: sign $(-1)^2 = +1$. (Inversions of $(2,3,1,4)$: $(2,1)$ and $(3,1)$, an even number.)'
+		},
+		{
+			id: 'ch07.cofactors.6',
+			type: 'numeric',
+			prompt: 'For $A = \\begin{bmatrix}1&2&3\\\\0&1&4\\\\5&6&0\\end{bmatrix}$, compute the cofactor $C_{23}$.',
+			answer: 4,
+			explain: 'Delete row 2 and column 3: the minor is $\\begin{vmatrix}1&2\\\\5&6\\end{vmatrix} = 6 - 10 = -4$. The sign is $(-1)^{2+3} = -1$, so $C_{23} = 4$.'
+		},
+		{
+			id: 'ch07.cofactors.7',
+			type: 'numeric',
+			prompt: 'Use Cramer’s rule to find $y$ in $2x + 3y = 8,\\ x + 4y = 9$.',
+			answer: 2,
+			explain: '$\\det A = 8 - 3 = 5$. Replace column 2 by $\\mathbf b$: $\\begin{vmatrix}2&8\\\\1&9\\end{vmatrix} = 18 - 8 = 10$. So $y = 10/5 = 2$ (and $x = (32 - 27)/5 = 1$).'
 		}
 	]
 };

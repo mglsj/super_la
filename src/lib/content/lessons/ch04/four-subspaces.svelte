@@ -10,6 +10,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { fourSubspaces } from '#lib/content/worked/ch04.js';
 
 	let m = $state<Mat>([
 		[1, 2, 3],
@@ -103,6 +105,17 @@
 		<em> row rank = column rank</em>.
 	</p>
 </Callout>
+
+<h2>Exam technique: bases for all the subspaces at once</h2>
+<Callout kind="warning" title="Which matrix do you read each basis from?">
+	<p>
+		Row operations keep the <strong class="text-slate-50">row space</strong> and the <strong class="text-slate-50">null space</strong>, but they change the column space. So: column space
+		basis = pivot columns of the <em>original</em> <Tex tex="A" />; row space basis = nonzero rows of the reduced matrix <Tex tex="R" />; null space = solutions of
+		<Tex tex={'R\\mathbf x = \\mathbf 0'} />.
+	</p>
+</Callout>
+
+<WorkedExample {...fourSubspaces} />
 
 <Recap
 	points={[

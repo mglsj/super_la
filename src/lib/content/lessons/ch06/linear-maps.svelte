@@ -6,6 +6,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { whichLinear } from '#lib/content/worked/ch06.js';
 
 	const ang = Math.PI / 6;
 	const maps: { name: string; f: (v: number[]) => number[] }[] = [
@@ -78,6 +80,13 @@
 		If <Tex tex={'\\mathbf b_1,\\dots,\\mathbf b_n'} /> is a basis of <Tex tex="V" />, then you can choose <Tex tex={'T(\\mathbf b_1), \\dots, T(\\mathbf b_n)'} /> to be <em>any</em> vectors of <Tex tex="W" />, and exactly one linear map has those values. That is why a matrix, whose columns are the images of the basis, describes the whole map.
 	</p>
 </Callout>
+
+<h2>Exam technique: is it linear?</h2>
+<p>
+	A proof of linearity has to work for <em>all</em> inputs, so it uses letters. A disproof needs only <em>one</em> failure, so it uses specific numbers. Graders look for exactly that difference.
+</p>
+
+<WorkedExample {...whichLinear} />
 
 <Recap
 	points={[

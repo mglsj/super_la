@@ -6,7 +6,7 @@ export const ch06: QuizBank = {
 			id: 'ch06.linear-maps.1',
 			type: 'mcq',
 			prompt: 'Which of these maps $\\mathbb{R}^2\\to\\mathbb{R}^2$ is linear?',
-			choices: ['$T(x,y) = (x + y,\\ 2x)$', '$T(x,y) = (x + 1,\\ y)$', '$T(x,y) = (x^2,\\ y)$', '$T(x,y) = (xy,\\ x)$'],
+			choices: ['$T(x,y) = (x + y,\\ 2x)$', '$T(x,y) = (x + 1,\\ y)$', '$T(x,y) = (x^2,\\ y)$', '$T(x,y) = (|x|,\\ y)$'],
 			answer: 0,
 			explain: 'Each output is a sum of constants times $x$ and $y$. The others have a constant shift or a nonlinear term.'
 		},
@@ -31,6 +31,14 @@ export const ch06: QuizBank = {
 			prompt: 'For the same $T$, find $T(2,3)$.',
 			answer: [7, 3],
 			explain: '$T(2,3) = 2(2,3) + 3(1,-1) = (4,6) + (3,-3) = (7, 3)$.'
+		},
+		{
+			id: 'ch06.linear-maps.5',
+			type: 'mcq',
+			prompt: 'Which of these maps on $M_2(\\mathbb R)$ (or from it) is **not** linear?',
+			choices: ['$X\\mapsto X^2$', '$X\\mapsto X^{\\mathsf T}$', '$X\\mapsto\\operatorname{tr}X$', '$X\\mapsto AX$ for a fixed matrix $A$'],
+			answer: 0,
+			explain: '$(2I)^2 = 4I\\ne2I^2 = 2I$, so squaring fails the scaling rule. Transpose, trace and left multiplication by a fixed $A$ all respect sums and scalar multiples.'
 		}
 	],
 	'ch06.kernel-image': [
@@ -63,6 +71,13 @@ export const ch06: QuizBank = {
 			choices: ['$\\mathbf u - \\mathbf v \\in \\ker T$', '$\\mathbf u = \\mathbf v$', '$\\mathbf u + \\mathbf v = \\mathbf 0$', '$T = 0$'],
 			answer: 0,
 			explain: '$T(\\mathbf u - \\mathbf v) = T\\mathbf u - T\\mathbf v = \\mathbf 0$.'
+		},
+		{
+			id: 'ch06.kernel-image.5',
+			type: 'numeric',
+			prompt: 'Let $T:P_3\\to\\mathbb R^2$, $T(p) = (p(0),\\ p(1))$. What is $\\dim\\ker T$?',
+			answer: 2,
+			explain: 'The image is all of $\\mathbb R^2$ ($T(1) = (1,1)$ and $T(t) = (0,1)$ are independent), so the rank is $2$ and $\\dim\\ker T = 4 - 2 = 2$. A basis: $t(t - 1)$ and $t^2(t - 1)$.'
 		}
 	],
 	'ch06.rank-nullity': [
@@ -98,9 +113,9 @@ export const ch06: QuizBank = {
 		{
 			id: 'ch06.rank-nullity.5',
 			type: 'numeric',
-			prompt: "What is the dimension of $\\{p\\in P_3 : p(1) = 0\\ \\text{and}\\ p'(1) = 0\\}$? ($\\dim P_3 = 4$.)",
+			prompt: 'What is the dimension of $\\{p\\in P_3 : p(-1) = 0\\ \\text{and}\\ p(2) = 0\\}$? ($\\dim P_3 = 4$.)',
 			answer: 2,
-			explain: "It is the kernel of $T(p) = (p(1),\\ p'(1))$. $T(1) = (1,0)$ and $T(t) = (1,1)$ are independent, so $\\operatorname{rank}T = 2$ and the dimension is $4 - 2 = 2$. A basis: $(t - 1)^2,\\ (t - 1)^3$."
+			explain: 'It is the kernel of $T(p) = (p(-1),\\ p(2))$. $T(1) = (1,1)$ and $T(t) = (-1,2)$ are independent, so $\\operatorname{rank}T = 2$ and the dimension is $4 - 2 = 2$. A basis: $(t + 1)(t - 2)$ and $t(t + 1)(t - 2)$.'
 		}
 	],
 	'ch06.matrix-of-a-map': [
@@ -137,6 +152,13 @@ export const ch06: QuizBank = {
 			prompt: 'For $T(x,y) = (2x + y,\\ x - y)$, give the first column of its matrix.',
 			answer: [2, 1],
 			explain: 'The first column is $T(1,0) = (2, 1)$.'
+		},
+		{
+			id: 'ch06.matrix-of-a-map.5',
+			type: 'vector',
+			prompt: 'A linear map has $T(1,1) = (3,1)$ and $T(1,-1) = (1,-1)$. Find $T(1,0)$, the first column of $[T]$.',
+			answer: [2, 0],
+			explain: '$(1,0) = \\tfrac12(1,1) + \\tfrac12(1,-1)$, so $T(1,0) = \\tfrac12(3,1) + \\tfrac12(1,-1) = (2,0)$.'
 		}
 	],
 	'ch06.change-of-basis': [
@@ -169,6 +191,13 @@ export const ch06: QuizBank = {
 			prompt: 'Reflect across $y=x$. In the basis $\\mathbf b_1 = (1,1),\\ \\mathbf b_2 = (-1,1)$, give the first column of $[A]_B$.',
 			answer: [1, 0],
 			explain: '$\\mathbf b_1$ lies on the mirror, so $A\\mathbf b_1 = \\mathbf b_1 = 1\\cdot\\mathbf b_1 + 0\\cdot\\mathbf b_2$.'
+		},
+		{
+			id: 'ch06.change-of-basis.5',
+			type: 'numeric',
+			prompt: 'A matrix satisfies $P^{-1}AP = \\operatorname{diag}(2,3)$ for some invertible $P$. What is the trace of $A^2$?',
+			answer: 13,
+			explain: '$A^2 = P\\operatorname{diag}(4,9)P^{-1}$, and trace is a similarity invariant: $\\operatorname{tr}A^2 = 4 + 9 = 13$.'
 		}
 	]
 };

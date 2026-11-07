@@ -8,6 +8,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { independenceTest, basisParameter, polyIndependence } from '#lib/content/worked/ch05.js';
 
 	let u = $state([2, 1]);
 	let v = $state([1, 2]);
@@ -73,6 +75,19 @@
 		<li>More than <Tex tex="n" /> vectors in <Tex tex={'\\mathbb{R}^n'} /> are always dependent (too many columns, not enough pivots).</li>
 	</ul>
 </Callout>
+
+<h2>Exam technique: testing independence</h2>
+<Callout kind="theorem" title="The column test">
+	<p>
+		Put the vectors as the columns of <Tex tex="A" />. They are independent exactly when <Tex tex={'A\\mathbf c = \\mathbf 0'} /> has only <Tex tex={'\\mathbf c = \\mathbf 0'} />, i.e.
+		when every column of the echelon form has a pivot. For <Tex tex="n" /> vectors in <Tex tex={'\\mathbb R^n'} /> this is the same as <Tex tex={'\\det A\\ne0'} />. For polynomials or
+		matrices, first replace each one by its coordinate vector.
+	</p>
+</Callout>
+
+<WorkedExample {...independenceTest} />
+<WorkedExample {...basisParameter} />
+<WorkedExample {...polyIndependence} />
 
 <Recap
 	points={[

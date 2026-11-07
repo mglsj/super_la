@@ -6,6 +6,8 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
+	import { mapFromBasis } from '#lib/content/worked/ch06.js';
 	import Slider from '#lib/components/lesson/Slider.svelte';
 
 	// p(x) = a + b x + c x^2, p'(x) = b + 2c x
@@ -63,6 +65,20 @@
 		The recipe never changes: <em>apply the map to each basis vector, and write the results as columns in the output basis</em>. It is the same idea as "where do î and ĵ land?", now for any space.
 	</p>
 </Callout>
+
+<h2>A map known only on a basis</h2>
+<Callout kind="theorem" title="Linear maps and bases">
+	<p>
+		If <Tex tex={'\\mathbf b_1,\\dots,\\mathbf b_n'} /> is a basis of <Tex tex="V" /> and <Tex tex={'\\mathbf w_1,\\dots,\\mathbf w_n'} /> are <em>any</em> vectors of <Tex tex="W" />,
+		there is exactly one linear map with <Tex tex={'T\\mathbf b_i = \\mathbf w_i'} />. In matrix form, <Tex tex={'[T]\\,B = M'} /> where <Tex tex="B" /> has the
+		<Tex tex={'\\mathbf b_i'} /> as columns and <Tex tex="M" /> has the <Tex tex={'\\mathbf w_i'} /> as columns, so <Tex tex={'[T] = MB^{-1}'} />.
+	</p>
+</Callout>
+<p>
+	Composition is matrix multiplication with the order of application read right to left: <Tex tex={'[S\\circ T] = [S][T]'} /> means "first <Tex tex="T" />, then <Tex tex="S" />".
+</p>
+
+<WorkedExample {...mapFromBasis} />
 
 <Recap
 	points={[

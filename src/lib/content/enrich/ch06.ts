@@ -10,7 +10,7 @@ export const enrich: Record<string, Enrich> = {
 			'Right. Each output is a sum of constants times $x$ and $y$, which is linear.',
 			'No. $T(0,0) = (1,0)\\ne\\mathbf 0$, so it is not linear (it is a translation).',
 			'No. Squaring is not linear: $T(2,0) = (4,0)\\ne2T(1,0) = (2,0)$.',
-			'No. $xy$ is a product of the inputs; $T(2,2)$ has $xy = 4$ but $2T(1,1)$ has $2$.'
+			'No. The absolute value does not respect negative scalars: $T(-1,0) = (1,0)$ but $-T(1,0) = (-1,0)$.'
 		]
 	},
 	'ch06.linear-maps.2': {

@@ -9,6 +9,7 @@
 	import Callout from '#lib/components/lesson/Callout.svelte';
 	import Figure from '#lib/components/lesson/Figure.svelte';
 	import Recap from '#lib/components/lesson/Recap.svelte';
+	import { coords3d } from '#lib/content/worked/ch05.js';
 	import WorkedExample from '#lib/components/lesson/WorkedExample.svelte';
 
 	const polyCoords = {
@@ -112,6 +113,15 @@
 </Callout>
 
 <WorkedExample title="polynomial coordinates and extending a basis" problem={polyCoords.problem} method={polyCoords.method} steps={polyCoords.steps} credit="Ordered bases and extension after Axler, Chapter 2; matching coefficients as in Strang." />
+
+<h2>Coordinates in three dimensions</h2>
+<p>
+	In <Tex tex={'\\mathbb R^3'} /> the recipe is the same as in the plane, only the system is bigger: <Tex tex={'[\\mathbf x]_B'} /> is the solution <Tex tex={'\\mathbf c'} /> of
+	<Tex tex={'P\\mathbf c = \\mathbf x'} />, where <Tex tex="P" /> has the basis vectors as columns. Going the other way, from coordinates to the vector, is just the multiplication
+	<Tex tex={'P\\mathbf c'} />.
+</p>
+
+<WorkedExample {...coords3d} />
 
 <Recap
 	points={[

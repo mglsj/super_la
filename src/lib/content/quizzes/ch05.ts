@@ -32,6 +32,20 @@ export const ch05: QuizBank = {
 			choices: ['always dependent', 'always independent', 'a basis', 'empty'],
 			answer: 0,
 			explain: '$1\\cdot\\mathbf 0 + 0\\cdot\\mathbf v_2 + \\dots = \\mathbf 0$ is a nontrivial combination.'
+		},
+		{
+			id: 'ch05.independence.5',
+			type: 'numeric',
+			prompt: 'For which value of $k$ do $(1,1,0)$, $(0,1,1)$, $(1,0,k)$ fail to form a basis of $\\mathbb R^3$?',
+			answer: -1,
+			explain: 'With the vectors as columns, $\\det = 1(1\\cdot k - 0\\cdot1) - 0 + 1(1\\cdot1 - 1\\cdot0) = k + 1$. It vanishes only for $k = -1$; then $(1,1,0) - (0,1,1) = (1,0,-1)$, the third vector.'
+		},
+		{
+			id: 'ch05.independence.6',
+			type: 'vector',
+			prompt: 'The vectors $\\mathbf v_1 = (1,1,0)$, $\\mathbf v_2 = (0,1,1)$, $\\mathbf v_3 = (1,2,1)$ are dependent. Give coefficients $(c_1,c_2,c_3)$ with $c_1\\mathbf v_1 + c_2\\mathbf v_2 + c_3\\mathbf v_3 = \\mathbf 0$ and $c_3 = -1$.',
+			answer: [1, 1, -1],
+			explain: '$\\mathbf v_1 + \\mathbf v_2 = (1,2,1) = \\mathbf v_3$, so $\\mathbf v_1 + \\mathbf v_2 - \\mathbf v_3 = \\mathbf 0$: $(c_1,c_2,c_3) = (1,1,-1)$.'
 		}
 	],
 	'ch05.basis': [
@@ -146,6 +160,20 @@ export const ch05: QuizBank = {
 			prompt: 'What is the dimension of the span of $(1,0,0),\\ (0,1,0),\\ (1,1,0)$?',
 			answer: 2,
 			explain: 'The third vector is the sum of the first two, so the span is the $xy$-plane.'
+		},
+		{
+			id: 'ch05.dimension.5',
+			type: 'numeric',
+			prompt: '$U$ and $W$ are 3-dimensional subspaces of $\\mathbb R^4$. What is the smallest possible dimension of $U\\cap W$?',
+			answer: 2,
+			explain: '$\\dim(U\\cap W) = \\dim U + \\dim W - \\dim(U + W)\\ge3 + 3 - 4 = 2$, and $U = \\{x_4 = 0\\}$, $W = \\{x_1 = 0\\}$ attain it.'
+		},
+		{
+			id: 'ch05.dimension.6',
+			type: 'numeric',
+			prompt: 'What is the dimension of the space of $2\\times2$ matrices $X$ with $XD = DX$, where $D = \\operatorname{diag}(1,2)$?',
+			answer: 2,
+			explain: 'With $X = \\begin{bmatrix}a&b\\\\c&d\\end{bmatrix}$: $XD = \\begin{bmatrix}a&2b\\\\c&2d\\end{bmatrix}$ and $DX = \\begin{bmatrix}a&b\\\\2c&2d\\end{bmatrix}$. So $2b = b$ and $c = 2c$, giving $b = c = 0$: the diagonal matrices, dimension $2$.'
 		}
 	]
 };
