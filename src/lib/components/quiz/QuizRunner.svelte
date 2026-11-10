@@ -34,7 +34,6 @@
 
 	let run = $state(0);
 	let index = $state(0);
-	let attempt = $state(0);
 	let attempts = $state(0);
 	let status = $state<'idle' | 'right' | 'wrong'>('idle');
 	let revealed = $state(false);
@@ -77,15 +76,14 @@
 		status = correct ? 'right' : 'wrong';
 	}
 
+	/** back to answering without remounting the question, so the student's input stays */
 	function retry() {
 		status = 'idle';
-		attempt++;
 	}
 
 	function advance() {
 		if (index + 1 < questions.length) {
 			index++;
-			attempt = 0;
 			attempts = 0;
 			status = 'idle';
 			revealed = false;
@@ -109,7 +107,6 @@
 	function restart() {
 		run++;
 		index = 0;
-		attempt = 0;
 		attempts = 0;
 		status = 'idle';
 		revealed = false;
@@ -166,8 +163,8 @@
 			</ol>
 		</header>
 
-		{#key `${run}-${q.id}-${attempt}`}
-			<QuestionView {q} {status} reveal={status === 'right' || revealed} onsubmit={submit} />
+		{#key `${run}-${q.id}`}
+			<QuestionView {q} {status} reveal={status === 'right' || revealed} onsubmit={submit} onretry={retry} />
 		{/key}
 
 		{#if mode !== 'test' && status !== 'right'}
@@ -205,11 +202,10 @@
 		{:else if status === 'wrong'}
 			<div role="status" class="mt-4 rounded-md border-[3px] border-rose-400/60 bg-rose-400/10 p-4">
 				<div class="font-pixel text-[11px] text-rose-300">NOT QUITE</div>
-				<p class="mt-1 text-slate-300">Give it another go. Use the hints for a nudge, or reveal the full solution.</p>
-				<div class="mt-3 flex flex-wrap gap-2">
-					<Button onclick={retry}>Try again</Button>
-					{#if !revealed}<Button variant="secondary" onclick={() => (revealed = true)}>Show solution</Button>{/if}
-				</div>
+				<p class="mt-1 text-slate-300">
+					{q.type === 'mcq' ? 'Pick another option to try again.' : 'Fix your answer above and press Try again.'} Use the hints for a nudge, or reveal the full solution.
+				</p>
+				{#if !revealed}<div class="mt-3"><Button variant="secondary" onclick={() => (revealed = true)}>Show solution</Button></div>{/if}
 				{#if revealed}
 					<div class="mt-3 text-sm leading-relaxed whitespace-pre-line text-slate-200"><span class="font-pixel mb-1 block text-[10px] text-rose-300">SOLUTION</span><Rich text={q.explain} /></div>
 					<div class="mt-3"><Button variant="secondary" onclick={advance}>{index + 1 < questions.length ? 'Next question' : 'Finish'}</Button></div>

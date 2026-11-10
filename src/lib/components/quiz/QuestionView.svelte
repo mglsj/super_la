@@ -34,9 +34,17 @@
 		/** true once the answer is solved or revealed: show every explanation */
 		reveal?: boolean;
 		onsubmit: (correct: boolean) => void;
+		/** a wrong mcq answer is retried by picking another option: parent goes back to 'idle' */
+		onretry?: () => void;
 	}
 
-	let { q, status, reveal = false, onsubmit }: Props = $props();
+	let { q, status, reveal = false, onsubmit, onretry }: Props = $props();
+
+	function pick(i: number) {
+		if (status === 'wrong' && choice === i) return;
+		choice = i;
+		if (status === 'wrong') onretry?.();
+	}
 
 	let locked = $derived(status === 'right');
 	let order = $derived(q.type === 'mcq' ? orderFor(q.id, q.choices.length) : []);
@@ -116,7 +124,7 @@
 						role="radio"
 						aria-checked={choice === i}
 						disabled={locked}
-						onclick={() => (choice = i)}
+						onclick={() => pick(i)}
 						class="w-full rounded-xl border px-4 py-3 text-left transition focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:outline-none
 							{reveal && i === q.answer
 							? 'border-emerald-400 bg-emerald-400/10 text-white'
@@ -219,7 +227,8 @@
 		</p>
 	{/if}
 
-	{#if status === 'idle' && q.type !== 'open'}
-		<Button onclick={check} disabled={!ready}>Check</Button>
+	{#if q.type !== 'open' && (status === 'idle' || (status === 'wrong' && q.type !== 'mcq'))}
+		<!-- after a wrong answer the input is kept: edit it and press Try again to re-check -->
+		<Button onclick={check} disabled={!ready}>{status === 'wrong' ? 'Try again' : 'Check'}</Button>
 	{/if}
 </div>
